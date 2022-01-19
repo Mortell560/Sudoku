@@ -5,17 +5,30 @@ class Board:
         self.ligne = 9
         self.taille_case = 3
 
-    def check_col(self,coords): '''regarde si y'a un autre chiffre égal sur toute la même colonne'''
+    def check_colonne(self,coords, value): '''regarde si y'a un autre chiffre égal sur toute la même colonne'''
         x, y = coords[0], coords[1]
+        value_x_y = get_value(coords)
         for colonne in range(self.colonne):
             if colonne == y:
-                return False
+                continue
+            else:
+                value_coords_act = get_value(x, colonne)
+                if value_coords_act == value_x_y:
+                    return False
+        return True
+                
 
-    def check_ligne(self, coords): '''regarde si y'a un autre chiffre égal sur toute la même ligne'''
+    def check_ligne(self, coords, value): '''regarde si y'a un autre chiffre égal sur toute la même ligne'''
         x, y = coords[0], coords[1]
-        for colonne in range(self.ligne):
-            if colonne == x:
-                return False
+        value_x_y = get_value(coords)
+        for ligne in range(self.ligne):
+            if ligne == x:
+                continue
+            else:
+                value_coords_act = get_value(ligne, y)
+                if value_coords_act == value_x_y:
+                    return False
+        return True
             
    def get_coords_case(self, coords): '''return une liste de tuple de coordonnées qui sont dans la même case que les coordonnées passés en argument'''
     x, y = coords[0], coords[1]
