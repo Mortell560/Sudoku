@@ -56,3 +56,8 @@ class Board:
             for i2 in range(self.taille_case):
                 liste_coords_case.append((x_case + i1, y_case + i2))
         return liste_coords_case
+
+    def coord_to_list_coord(self, coords):
+        x,y=coords[0],coords[1]
+        indice=x+y*self.colonne
+        return indice
