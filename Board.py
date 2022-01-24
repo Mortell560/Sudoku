@@ -61,3 +61,14 @@ class Board:
         x,y=coords[0],coords[1]
         indice=x+y*self.colonne
         return indice
+    
+    def __setitem__(self,coords,valeur):
+        x,y=coords[0],coords[1]
+        indice=x+y*self.colonne
+        self.valeur[indice]=nombre
+        
+    
+    def __getitem__(
+        
+        
+        
