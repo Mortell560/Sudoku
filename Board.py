@@ -9,10 +9,8 @@ class Board:
     
     def create_board(self, n):
         '''création d'un tableau remplie de 0. Puis on ajoute un nombre n de chiffres aléatoirement dans celui-ci'''
-        nbr_de_zero = self.colonne * self.ligne
-        for zero in range(nbr_de_zero):
-            self.board.append(zero)
-
+        self.board = [0] * self.colonne * self.ligne
+        
         for nombre in range(n):
             x = random.randint(0,8)
             y = random.randint(0,8)
@@ -28,7 +26,7 @@ class Board:
             if colonne == y:
                 continue
             else:
-                value_coords_act = self.get_value(x, colonne)
+                value_coords_act = self[(x, colonne)]
                 if value_coords_act == value:
                     return False
         return True
@@ -41,7 +39,7 @@ class Board:
             if ligne == x:
                 continue
             else:
-                value_coords_act = self.get_value(ligne, y)
+                value_coords_act = self[ligne, y]
                 if value_coords_act == value:
                     return False
         return True
@@ -65,7 +63,7 @@ class Board:
     def __setitem__(self,coords,valeur):
         x,y=coords[0],coords[1]
         indice=x+y*self.colonne
-        self.board[indice]=nombre
+        self.board[indice]=valeur
         
     
     def __getitem__(self,coords):
