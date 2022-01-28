@@ -1,22 +1,30 @@
-from multiprocessing.connection import wait
 from typing import Tuple
 from Pile import Pile
+from datetime import datetime
 import graphics
 from Board import Board
 import os
 
 _PATHS = {
     "Save": "img/Save.png",
-    "Arrow" : "img/Arrow.png"
+    "Arrow" : "img/Arrow.png",
+    "Reset": "img/Reset.png",
+    "Check": "img/Check.png",
+    "Leaderboard": "img/Menu.png",
+    "Cross": "img/No.png",
+    "Leaderboard_txt": "data/leaderboard.txt",
 }
 
 VERSION = "0.1"
 PLACE = 0
 RETURN = 1
 SOLVE = 2
-LEADERBOARD = 3
+SAVE = 3
+RESET = 4
 
 class Window:
+    """Classe qui s'occupe de l'affichage du sudoku"""
+
     def __init__(self, length: int, width: int) -> None:
         self.width = width
         self.length = length
@@ -30,15 +38,17 @@ class Window:
         graphics.remplir_fenetre(graphics.blanc)
         graphics.affiche_auto_off()
 
+
+    ########################################### Methodes de conversion ###########################################
     def _board_coord_to_pixel_coord(self, x: int, y: int) -> tuple:
-        """ Convertion une coordonnée de plateau en coordonnée en pixel """
+        """ Conversion une coordonnée de plateau en coordonnée en pixel """
         px = x * self.taille_case + self.begin_point_board[0]
         py = y * self.taille_case + self.begin_point_board[1]
 
         return px, py
 
     def _pixel_coord_to_board_coord(self, x: int, y: int) -> tuple:
-        """ Convertion une coordonnée en pixel en coordonnée de plateau """
+        """ Conversion une coordonnée en pixel en coordonnée de plateau """
         bx = (x - self.begin_point_board[0] + self.offset - 1)  // self.taille_case
         by = (y - self.begin_point_board[1] - 1) // self.taille_case
 
@@ -51,25 +61,117 @@ class Window:
 
         return bx, by
 
+    ########################################### Methodes de verification ###########################################
     def is_in_board(self, x: int, y: int) -> bool:
         """Vérifie si les coordonnées passées en paramètre sont dans la grille"""
         return self.begin_point_board[0] - self.offset <= x <= self.begin_point_board[0] + self.taille_case * 9 - self.offset and \
             self.begin_point_board[1] <= y <= self.begin_point_board[1] + self.taille_case * 9
 
-    def ask_action(self) -> Tuple[Tuple[int, int], int]:
-        """Waits for a click and returns the coordinates of the click and the action associated with it"""
+    def is_in_num_pad(self, x: int, y: int) -> bool:
+        """Vérifie si les coordonnées passées en paramètre sont dans le num pad"""
+        return self.num_pad_x - self.offset <= x <= self.num_pad_x + 3 * self.taille_case - self.offset and \
+            self.num_pad_y <= y <= self.num_pad_y + self.taille_case * 3
+
+    def is_in_leaderboard(self, x: int, y: int) -> bool:
+        """Vérifie si les coordonnées passées en paramètre sont sur le bouton de leaderboard"""
+        return self.offset//2 <= x <= self.img_size+self.offset//2 and \
+            self.width - 75 <= y <= self.width - 75 + self.img_size
+            
+    def is_in_save_button(self, x: int, y: int) -> bool:
+        """Vérifie si les coordonnées passées en paramètre sont sur le bouton de sauvegarde"""
+        return 170 <= x <= 170 + self.img_size and \
+            285 <= y <= 285 + self.img_size
+
+    def is_in_arrow_button(self, x: int, y: int) -> bool:
+        """Vérifie si les coordonnées passées en paramètre sont sur le bouton de retour en arriere"""
+        return self.length - 275 <= x <= self.length - 275 + self.img_size and \
+           300 <= y <= 300 + self.img_size
+
+    def is_in_solve_button(self, x: int, y: int) -> bool:
+        """Vérifie si les coordonnées passées en paramètre sont sur le bouton de résolution"""
+        return self.length - 275 <= x <= self.length - 275 + self.img_size and \
+            85 <= y <= 85 + self.img_size
+
+    def is_in_cancel_button(self, x: int, y: int) -> bool:
+        """Vérifie si les coordonnées passées en paramètre sont sur le bouton pour annuler la selection d'une valeur"""
+        return self.length - 100 <= x <= self.length - 100 + self.img_size and \
+            self.width - 100 <= y <= self.width - 100 + self.img_size
+    
+    def is_in_reset_button(self, x: int, y: int) -> bool:
+        """Vérifie si les coordonnées passées en paramètre sont sur le bouton de reset"""
+        return 170 <= x <= 170 + self.img_size and \
+            85 <= y <= 85 + self.img_size
+
+    ########################################### Getters ###########################################
+    def ask_value(self) -> int | None:
+        """Waits for a click and returns the value that must be assigned to the cell"""
+        self.affiche_num_pad()
+        self._affiche_cancel_button()
         x, y = graphics.wait_clic()
         
-        # Tant que le clic n'est pas dans la grille, dans l'un des différents boutons, on redemande un clic
-        valid_action = self.is_in_board(x, y)
+        cancelled = self.is_in_cancel_button(x, y)
 
-        while not valid_action:
+        # Tant que le clic n'est pas dans le num pad ou cancelled, on redemande un clic
+        while not self.is_in_num_pad(x, y) and not cancelled:
             x, y = graphics.wait_clic()
-            valid_action = self.is_in_board(x, y)
+            cancelled = self.is_in_cancel_button(x, y)
         
-        return self._pixel_coord_to_board_coord(x, y), PLACE
+        self._clear()
+
+        if cancelled:
+            return None
+        
+        x, y = self._pixel_coord_to_num_pad_coord(x, y)
+        return x + y * 3 + 1
+
+    def ask_action(self) -> Tuple[Tuple[int, int], int] | Tuple[None, int] | None:
+        """Waits for a click and returns the coordinates of the click and the action associated with it"""
+        x, y = graphics.wait_clic()
+        Action = PLACE
+
+        # Tant que le clic n'est pas dans la grille, dans l'un des différents boutons, on redemande un clic
+        in_board = self.is_in_board(x, y)
+        in_leaderboard = self.is_in_leaderboard(x, y)
+        in_save = self.is_in_save_button(x, y)
+        in_arrow = self.is_in_arrow_button(x, y)
+        in_solve = self.is_in_solve_button(x, y)
+        in_reset = self.is_in_reset_button(x, y)
+
+        while not in_board and not in_leaderboard and not in_save and not in_arrow and not in_solve and not in_reset:
+            x, y = graphics.wait_clic()
+            in_board = self.is_in_board(x, y)
+            in_leaderboard = self.is_in_leaderboard(x, y)
+            in_save = self.is_in_save_button(x, y)
+            in_arrow = self.is_in_arrow_button(x, y)
+            in_solve = self.is_in_solve_button(x, y)
+            in_reset = self.is_in_reset_button(x, y)
+
+        if in_board:
+            Action = PLACE
+            return self._pixel_coord_to_board_coord(x, y), Action
+
+        elif in_leaderboard:
+            self.affiche_leaderboard()
+
+        elif in_save:
+            Action = SAVE
+            #self.save_leaderboard(6, "Rotate")
+            return None, Action
+        
+        elif in_arrow:
+            Action = RETURN
+            return None, Action
+        
+        elif in_solve:
+            Action = SOLVE
+            return None, Action
+
+        else:
+            Action = RESET
+            return None, Action
 
 
+    ########################################### Methodes d'affichage ###########################################
     def affiche_tableau(self, board: Board) -> None:
         """Affiche le tableau de sudoku"""
 
@@ -91,7 +193,7 @@ class Window:
         for i in range(board.colonne):
             for j in range(board.ligne):
                 if board[(j, i)] != 0:
-                    if not board.check_colonne(coords=(j, i), value=board[(j, i)]): # Si la valeur n'est pas valide on l'affiche en rouge || TODO: Penser à mettre check cell au lieu de check colonne
+                    if not board.check_colonne(coords=(j, i), value=board[(j, i)]) or not board.check_ligne((j,i), board[(j, i)]): # Si la valeur n'est pas valide on l'affiche en rouge || TODO: Penser à mettre check cell au lieu de check colonne
                         graphics.affiche_rectangle_plein((self.begin_point_board[0] + j * self.taille_case - self.offset+1, self.begin_point_board[1] + i * self.taille_case), \
                              (self.begin_point_board[0] + (j+1) * self.taille_case - self.offset, self.begin_point_board[1] + (i+1) * self.taille_case - 1), couleur=graphics.rouge)
 
@@ -112,33 +214,54 @@ class Window:
         for y in range(3):
             for x in range(3):
                 graphics.affiche_texte(list_n[x+y*3], (self.num_pad_x + x * self.taille_case + 10, self.num_pad_y + y * self.taille_case + 15), couleur=graphics.noir, taille_police=35, police='Arial')
+        graphics.affiche_tout()
 
-    def affiche_leaderboard(self, leaderboard: list[Tuple[str, int]]) -> None:
-        graphics.remplir_fenetre(graphics.blanc)
+    def affiche_leaderboard(self) -> None:
+        self._clear()
         graphics.affiche_texte(f"Sudoku V{VERSION}", (self.length//2 - 150, self.width - 100), couleur=graphics.noir, taille_police=50, police='Comic Sans MS')
-        for i, value in enumerate(leaderboard):
-            graphics.affiche_texte(f"{value[0]} : {value[1]}", (self.length//2 - 60, self.width - 150 - i * 50), couleur=graphics.noir, taille_police=35, police='Arial')
+
+        l = self.load_leaderboard()
+        l.sort(key=lambda x: x[1]) # Trie de la liste des scores par ordre décroissant en fonction du nombre de coup
+        if len(l) > 15:
+            l = l[:15] # On ne garde que les 15 premiers scores
+        
+        for i, value in enumerate(l):
+            graphics.affiche_texte(f"{value[0]} : {value[1]} moves - {value[2]}", (self.length//2 - 250, self.width - 150 - i * 50), couleur=graphics.noir, taille_police=35, police='Arial')
+        
         graphics.affiche_tout()
         graphics.wait_clic()
-        graphics.remplir_fenetre(graphics.blanc)
+        self._clear()
     
-    def _affiche_icon_and_buttons(self, pile: Pile = []) -> None:
-        self.affiche_image_wrapper(_PATHS["Arrow"], (self.length - 200, 300)) # Affichage de l'icone de la flèche pour le retour en arrière
+    def _affiche_icon_and_buttons(self, pile: Pile) -> None:
+        self.affiche_image_wrapper(_PATHS["Arrow"], (self.length - 275, 300)) # Affichage de l'icone de la flèche pour le retour en arrière
         self.affiche_image_wrapper(_PATHS["Save"], (170, 285)) # Affichage de l'icone de sauvegarde du score
-        graphics.affiche_texte(str(len(pile)), (self.length - 170, 250), couleur=graphics.noir, taille_police=35, police='Arial')
+        self.affiche_image_wrapper(_PATHS["Reset"], (170, 85)) # Affichage de l'icone de réinitialisation du problème
+        self.affiche_image_wrapper(_PATHS["Check"], (self.length - 275, 85)) # Affichage de l'icone pour solve le problème
+        self.affiche_image_wrapper(_PATHS["Leaderboard"], (10, self.width - 75)) # Affichage de l'icone pour afficher le leaderboard
+        graphics.affiche_texte(str(len(pile)), (self.length - 250, 250), couleur=graphics.noir, taille_police=35, police='Arial')
 
-    def afficher(self, board: list) -> None:
+    def afficher(self, board: list, pile_coup_joue: Pile = []) -> None:
+        """Affiche tout le jeu"""
         self.affiche_tableau(board)
         graphics.affiche_texte(f"Sudoku V{VERSION}", (self.length // 2 - 150, self.width - 100), couleur=graphics.noir, taille_police=50, police='Comic Sans MS') # Affiche le titre du jeu et la version
-        #self.affiche_num_pad()
-        self._affiche_icon_and_buttons()
+        self._affiche_icon_and_buttons(pile_coup_joue)
         graphics.affiche_tout()
 
     def affiche_win(self) -> None:
+        """Affiche le message de victoire"""
         graphics.affiche_texte("Gagné !", (self.num_pad_x + self.offset * 2 + 5, self.num_pad_y + self.taille_case * 3 + self.offset), couleur=graphics.rouge, taille_police=35, police='Arial')
         graphics.affiche_tout()
 
+    def _affiche_cancel_button(self) -> None:
+        self.affiche_image_wrapper(_PATHS["Cross"], (self.length - 100, self.width - 100)) # Affichage de l'icone de la croix pour cancel son choix
+        graphics.affiche_tout()
+
+    ########################################### Wrappers, fonctions utilitaires ###########################################
+    def _clear(self):
+        graphics.remplir_fenetre(graphics.blanc)
+
     def affiche_image_wrapper(self, img_path, dest_bas_gauche) -> None:
+        """Affiche une image avec son path et la position du point le plus bas à gauche de l'image"""
         try:
             graphics.affiche_image(img_path, dest_bas_gauche)
         except FileNotFoundError:
@@ -150,6 +273,40 @@ class Window:
             print(err_msg)
             exit(1)
 
+    def load_leaderboard(self) -> list:
+        try:
+            with open(_PATHS["Leaderboard_txt"], 'r') as f:
+                l = []
+                lines = f.readlines()
+                for line in lines:
+                    line = line.strip().split(',')
+                    l.append((line[0], int(line[1]), line[2]))
+                return l
+
+        except FileNotFoundError:
+            err_msg = """
+            Le fichier "{}" n\'a pas pu être ouvert depuis le dossier actuel "{}"
+            Verifiez que le dossier data est présent et lancez le jeu depuis le dossier src
+            """.format(_PATHS["Leaderboard_txt"], os.getcwd())
+
+            print(err_msg)
+            exit(1)
+
+    def save_leaderboard(self, score: int, username: str) -> None:
+        """Sauvegarde les stats d'username et son score (nb moves) dans le fichier leaderboard.txt"""
+        try:
+            now = datetime.now()
+            date = now.strftime("%d/%m/%Y %H:%M:%S")
+            with open(_PATHS["Leaderboard_txt"], 'a') as f:
+                f.write(f"{username},{score},{date}\n")
+        except FileNotFoundError:
+            err_msg = """
+            Le fichier "{}" n\'a pas pu être ouvert depuis le dossier actuel "{}"
+            Verifiez que le dossier data est présent et lancez le jeu depuis le dossier src
+            """.format(_PATHS["Leaderboard_txt"], os.getcwd())
+
+            print(err_msg)
+            exit(1)
         
 ###################### Partie Test ##############################
 b= Board()
@@ -160,4 +317,9 @@ b[4, 3] = 5
 a = Window(1000, 1200)
 while graphics.pas_echap():
     a.afficher(b)
-    print(a.ask_action())
+    x = a.ask_action()
+    print(x)
+    if x and x[1] == PLACE:
+        y = a.ask_value()
+        if y:
+            b[x[0][0], x[0][1]] = y
