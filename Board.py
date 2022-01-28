@@ -22,10 +22,12 @@ class Board:
     def check_colonne(self,coords, value): 
         """regarde si y'a un autre chiffre égal sur toute la même colonne"""
         x, y = coords[0], coords[1]
+
         for colonne in range(self.colonne):
             if colonne == y:
                 continue
             else:
+
                 value_coords_act = self[(x, colonne)]
                 if value_coords_act == value:
                     return False
@@ -35,6 +37,7 @@ class Board:
     def check_ligne(self, coords, value): 
         """regarde si y'a un autre chiffre égal sur toute la même ligne"""
         x, y = coords[0], coords[1]
+
         for ligne in range(self.ligne):
             if ligne == x:
                 continue
@@ -71,5 +74,3 @@ class Board:
         indice=x+y*self.colonne
         return self.board[indice]
         
-        
-     
