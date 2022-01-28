@@ -1,6 +1,7 @@
 import random
 
 class Board:
+    ind_liste = 0 #utile pour le create_board()
     def __init__(self):
         self.board = []
         self.colonne = 9
@@ -9,17 +10,13 @@ class Board:
     
     def create_board(self, n):
         '''création d'un tableau remplie de 0. Puis on ajoute un nombre n de chiffres aléatoirement dans celui-ci'''
-        nbr_de_zero = self.colonne * self.ligne
-        for zero in range(nbr_de_zero):
-            self.board.append(zero)
-
-        for nombre in range(n):
-            x = random.randint(0,8)
-            y = random.randint(0,8)
-            num_dans_liste = x + y * (self.colonne + 1)
-            nombre_random = random.randint(1,9)
-            if check_cell((x,y), nombre_random):
-                self.board[num_dans_liste] = nombre_random
+        pass #culture
+    
+    
+    def is_full(self):
+        """Retourne True si tous les éléments sont non nuls, Sinon False"""
+        return len(self.board) == self.colonne * self.ligne
+    
     
     def check_colonne(self,coords, value): 
         """regarde si y'a un autre chiffre égal sur toute la même colonne"""
@@ -45,7 +42,18 @@ class Board:
                 if value_coords_act == value:
                     return False
         return True
-            
+    
+    
+    def check_case(self, coords: tuple, value: int):
+        """Vérifie que la position coords avec la valeur value est valide pour la case. True si oui, Sinon False"""
+        return True
+    
+    
+     def check_cell(self, coords, value):
+        """utilise tous les précédents checks pour déterminer si la position est complètement valide. True si c’est le cas, False sinon."""
+        return self.check_case(coords, value) == self.check_colonne(coords, value) == self.check_ligne(coords, value)
+    
+    
     def get_coords_case(self, coords): 
         """return une liste de tuple de coordonnées qui sont dans la même case que les coordonnées passés en argument"""
         x, y = coords[0], coords[1]
@@ -57,18 +65,31 @@ class Board:
                 liste_coords_case.append((x_case + i1, y_case + i2))
         return liste_coords_case
 
+    
     def coord_to_list_coord(self, coords):
-        x,y=coords[0],coords[1]
-        indice=x+y*self.colonne
+        """donne l'indice de la coords données en argument de la liste self.board"""
+        x, y = coords[0], coords[1]
+        indice = x + y * self.colonne
         return indice
+   
+
+    def list_indice_to_coords(self, ind_liste):
+        """donne les coords en fonction de l'indice dans la liste self.board"""
+        x = ind_liste % 9
+        y = ind_liste // 9
+        coords = (x,y)
+        return coords
     
-    def __setitem__(self,coords,valeur):
-        x,y=coords[0],coords[1]
-        indice=x+y*self.colonne
-        self.board[indice]=nombre
+    
+    def __setitem__(self, coords, valeur):
+        """met une valeur aux coords données"""
+        x , y = coords[0], coords[1]
+        indice = x+ y * self.colonne
+        self.board[indice] = valeur
         
     
-    def __getitem__(
-        
-        
-        
+    def __getitem__(self,coords):
+        """donne la valeur en fonction des coords données"""
+        x , y = coords[0], coords[1]
+        indice = x + y * self.colonne
+        return self.board[indice]
