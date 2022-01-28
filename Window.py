@@ -309,6 +309,7 @@ class Window:
             exit(1)
         
 ###################### Partie Test ##############################
+"""
 b= Board()
 b.board=[0]*9*9
 b[4, 7] = 5
@@ -323,3 +324,4 @@ while graphics.pas_echap():
         y = a.ask_value()
         if y:
             b[x[0][0], x[0][1]] = y
+"""
