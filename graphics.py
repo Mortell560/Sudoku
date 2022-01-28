@@ -282,7 +282,7 @@ __images = dict()
 def charge_image(nom_image):
     global __images_original,__images
     """ charge une image en mémoire """
-    __images_original[nom_image] = pygame.image.load(nom_image).convert()
+    __images_original[nom_image] = pygame.image.load(nom_image).convert_alpha()
     __images[nom_image] = __images_original[nom_image]
 
 def affiche_image(nom_image,dest_bas_gauche, source_bas_gauche = None, source_haut_droit = None):
