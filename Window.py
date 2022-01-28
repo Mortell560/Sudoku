@@ -1,4 +1,3 @@
-from typing import Tuple
 from Pile import Pile
 from datetime import datetime
 import graphics
