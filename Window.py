@@ -103,7 +103,7 @@ class Window:
             85 <= y <= 85 + self.img_size
 
     ########################################### Getters ###########################################
-    def ask_value(self) -> int | None:
+    def ask_value(self):
         """Waits for a click and returns the value that must be assigned to the cell"""
         self.affiche_num_pad()
         self._affiche_cancel_button()
@@ -124,7 +124,7 @@ class Window:
         x, y = self._pixel_coord_to_num_pad_coord(x, y)
         return x + y * 3 + 1
 
-    def ask_action(self) -> Tuple[Tuple[int, int], int] | Tuple[None, int] | None:
+    def ask_action(self):
         """Waits for a click and returns the coordinates of the click and the action associated with it"""
         x, y = graphics.wait_clic()
         Action = PLACE
