@@ -49,7 +49,7 @@ class Board:
         return True
     
     
-     def check_cell(self, coords, value):
+    def check_cell(self, coords, value):
         """utilise tous les précédents checks pour déterminer si la position est complètement valide. True si c’est le cas, False sinon."""
         return self.check_case(coords, value) == self.check_colonne(coords, value) == self.check_ligne(coords, value)
     
