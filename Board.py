@@ -46,7 +46,7 @@ class Board:
     
     def check_case(self, coords: tuple, value: int):
         """Vérifie que la position coords avec la valeur value est valide pour la case. True si oui, Sinon False"""
-        return pass
+        pass
     
     
     def check_cell(self, coords, value):
