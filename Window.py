@@ -78,18 +78,18 @@ class Window:
             
     def is_in_save_button(self, x: int, y: int) -> bool:
         """Vérifie si les coordonnées passées en paramètre sont sur le bouton de sauvegarde"""
-        return 170 <= x <= 170 + self.img_size and \
-            285 <= y <= 285 + self.img_size
+        return self.img_size <= x <= self.img_size * 2 and \
+            self.img_size + self.offset * 5 <= y <= self.offset * 5 + self.img_size * 2
 
     def is_in_arrow_button(self, x: int, y: int) -> bool:
         """Vérifie si les coordonnées passées en paramètre sont sur le bouton de retour en arriere"""
-        return self.length - 275 <= x <= self.length - 275 + self.img_size and \
-           300 <= y <= 300 + self.img_size
+        return self.length - self.offset * 5 <= x <= self.length - self.offset * 5 + self.img_size and \
+           self.offset * 5 + self.img_size <= y <= self.offset * 5 + self.img_size * 2
 
     def is_in_solve_button(self, x: int, y: int) -> bool:
         """Vérifie si les coordonnées passées en paramètre sont sur le bouton de résolution"""
-        return self.length - 275 <= x <= self.length - 275 + self.img_size and \
-            85 <= y <= 85 + self.img_size
+        return self.length - self.img_size - self.offset * 2 <= x <= self.length - self.offset * 2 and \
+            self.img_size <= y <= self.img_size*2
 
     def is_in_cancel_button(self, x: int, y: int) -> bool:
         """Vérifie si les coordonnées passées en paramètre sont sur le bouton pour annuler la selection d'une valeur"""
@@ -98,8 +98,8 @@ class Window:
     
     def is_in_reset_button(self, x: int, y: int) -> bool:
         """Vérifie si les coordonnées passées en paramètre sont sur le bouton de reset"""
-        return 170 <= x <= 170 + self.img_size and \
-            85 <= y <= 85 + self.img_size
+        return self.img_size <= x <= self.img_size*2 and \
+            self.img_size <= y <= self.img_size*2
 
     ########################################### Getters ###########################################
     def ask_value(self):
