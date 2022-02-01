@@ -74,3 +74,17 @@ class Board:
         indice=x+y*self.colonne
         return self.board[indice]
         
+    def is_empty(self,coords):
+        x,y=coords[0],coords[1]
+        if self[x,y] == 0 :
+            return True
+        else: 
+            return False
+        
+    def is_win(self):
+        for valeur in self.board:
+            if valeur not is_empty:
+                
+                
+        
+        
