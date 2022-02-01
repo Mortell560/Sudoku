@@ -15,7 +15,7 @@ class Board:
     
     def is_full(self):
         """Retourne True si tous les éléments sont non nuls, Sinon False"""
-        return len(self.board) == self.colonne * self.ligne
+        pass
     
     
     def check_colonne(self,coords, value): 
@@ -51,7 +51,7 @@ class Board:
     
     def check_cell(self, coords, value):
         """utilise tous les précédents checks pour déterminer si la position est complètement valide. True si c’est le cas, False sinon."""
-        return self.check_case(coords, value) == self.check_colonne(coords, value) == self.check_ligne(coords, value)
+        return self.check_case(coords, value) and self.check_colonne(coords, value) and self.check_ligne(coords, value)
     
     
     def get_coords_case(self, coords): 
