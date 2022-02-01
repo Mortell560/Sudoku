@@ -27,7 +27,7 @@ class Window:
     def __init__(self, length: int, width: int) -> None:
         self.width = width
         self.length = length
-        self.begin_point_board = (self.length//6, self.width//3)
+        self.begin_point_board = (self.length//5, self.width//3)
         self.taille_case = self.length // 13
         self.offset = 20
         self.num_pad_x = self.length//3 + self.offset * 3 # yes i did tests and it works
@@ -196,7 +196,7 @@ class Window:
                         graphics.affiche_rectangle_plein((self.begin_point_board[0] + j * self.taille_case - self.offset+1, self.begin_point_board[1] + i * self.taille_case), \
                              (self.begin_point_board[0] + (j+1) * self.taille_case - self.offset, self.begin_point_board[1] + (i+1) * self.taille_case - 1), couleur=graphics.rouge)
 
-                    graphics.affiche_texte(str(board[(j, i)]), (self.begin_point_board[0] + self.taille_case * j + 10, self.begin_point_board[1] + self.taille_case * i + 15), couleur=graphics.noir, taille_police=35, police='Arial')
+                    graphics.affiche_texte(str(board[(j, i)]), (self.begin_point_board[0] + self.taille_case * j, self.begin_point_board[1] + self.taille_case * i), couleur=graphics.noir, taille_police=35, police='Arial')
     
     def affiche_num_pad(self) -> None:
         list_n = [str(i) for i in range(1, 10)] # liste des nombres à afficher
@@ -212,7 +212,7 @@ class Window:
         # Affichage des valeurs
         for y in range(3):
             for x in range(3):
-                graphics.affiche_texte(list_n[x+y*3], (self.num_pad_x + x * self.taille_case + 10, self.num_pad_y + y * self.taille_case + 15), couleur=graphics.noir, taille_police=35, police='Arial')
+                graphics.affiche_texte(list_n[x+y*3], (self.num_pad_x + x * self.taille_case, self.num_pad_y + y * self.taille_case), couleur=graphics.noir, taille_police=35, police='Arial')
         graphics.affiche_tout()
 
     def affiche_leaderboard(self) -> None:
@@ -232,12 +232,12 @@ class Window:
         self._clear()
     
     def _affiche_icon_and_buttons(self, pile: Pile) -> None:
-        self.affiche_image_wrapper(_PATHS["Arrow"], (self.length - 275, 300)) # Affichage de l'icone de la flèche pour le retour en arrière
-        self.affiche_image_wrapper(_PATHS["Save"], (170, 285)) # Affichage de l'icone de sauvegarde du score
-        self.affiche_image_wrapper(_PATHS["Reset"], (170, 85)) # Affichage de l'icone de réinitialisation du problème
-        self.affiche_image_wrapper(_PATHS["Check"], (self.length - 275, 85)) # Affichage de l'icone pour solve le problème
+        self.affiche_image_wrapper(_PATHS["Arrow"], (self.length - self.offset * 5, self.img_size + self.offset * 5)) # Affichage de l'icone de la flèche pour le retour en arrière
+        self.affiche_image_wrapper(_PATHS["Save"], (self.img_size, self.img_size + self.offset * 5)) # Affichage de l'icone de sauvegarde du score
+        self.affiche_image_wrapper(_PATHS["Reset"], (self.img_size, self.img_size)) # Affichage de l'icone de réinitialisation du problème
+        self.affiche_image_wrapper(_PATHS["Check"], (self.length - self.img_size - self.offset * 2, self.img_size)) # Affichage de l'icone pour solve le problème
         self.affiche_image_wrapper(_PATHS["Leaderboard"], (10, self.width - 75)) # Affichage de l'icone pour afficher le leaderboard
-        graphics.affiche_texte(str(len(pile)), (self.length - 250, 250), couleur=graphics.noir, taille_police=35, police='Arial')
+        graphics.affiche_texte(str(len(pile)), (self.length - self.offset * 3 - self.offset//2, self.img_size + self.offset * 5 - self.offset), couleur=graphics.noir, taille_police=35, police='Arial')
 
     def afficher(self, board: list, pile_coup_joue: Pile = []) -> None:
         """Affiche tout le jeu"""
@@ -308,13 +308,13 @@ class Window:
             exit(1)
         
 ###################### Partie Test ##############################
-"""
+
 b= Board()
 b.board=[0]*9*9
 b[4, 7] = 5
 b[5, 5] = 6
 b[4, 3] = 5
-a = Window(1000, 1200)
+a = Window(600, 800)
 while graphics.pas_echap():
     a.afficher(b)
     x = a.ask_action()
@@ -323,4 +323,4 @@ while graphics.pas_echap():
         y = a.ask_value()
         if y:
             b[x[0][0], x[0][1]] = y
-"""
+

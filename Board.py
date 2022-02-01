@@ -83,8 +83,5 @@ class Board:
         
     def is_win(self):
         for valeur in self.board:
-            if valeur not is_empty:
-                
-                
-        
-        
+            if valeur is not self.is_empty():
+                pass
