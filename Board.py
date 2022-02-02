@@ -96,6 +96,12 @@ class Board:
             return True
         else:
             return False
-
+    
+    def is_full(self):    
+        for i in self.boards:
+            if i == 0:
+                return False
+            else:
+                return True
                 
             
