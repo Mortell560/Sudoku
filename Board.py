@@ -82,6 +82,9 @@ class Board:
             return False
         
     def is_win(self):
-        for valeur in self.board:
-            if valeur is not self.is_empty():
-                pass
+        for y in self.colonne:
+            for x in self.ligne:
+                coords(x,y),self[coords]
+                check_cells(coords)
+                
+            
