@@ -87,6 +87,15 @@ class Board:
                 if not self.check_cells((x,y),self[x,y]):   
                     return False                
        return True
+    
+    def check_case(self,coords: tuple, value: int):
+    # verifie pour le carre de 9 cases (ou se trouvent les coords)si "value" est deja present
+    #si jamais value est present on retourne false sinon True
+    liste=self.get_coords_case(coords)
+    if value not in liste:
+        return True
+    else:
+        return False
  
                 
             
