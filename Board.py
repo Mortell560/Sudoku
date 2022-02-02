@@ -82,9 +82,11 @@ class Board:
             return False
         
     def is_win(self):
-        for y in self.colonne:
-            for x in self.ligne:
-                coords(x,y),self[coords]
-                check_cells(coords)
+        for y in range(self.colonne):
+            for x in range(self.ligne):
+                if not self.check_cells((x,y),self[x,y]):   
+                    return False                
+       return True
+ 
                 
             
