@@ -5,4 +5,4 @@ class Game:
 
         val=self.B[coords]
         self.B[coords]=num
-        self.empiler.B((coords,val))
+        self.empiler.last_moves((coords,val))
