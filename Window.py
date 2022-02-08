@@ -289,7 +289,7 @@ class Window:
     def load_board(self) -> None:
         try:
             with open(_PATHS["Leaderboard_txt"], 'r') as f:
-                last_save = f.readlines()[-1].strip().split(',')[3:]
+                last_save = f.readlines()[-1].strip().split(',')[3:] #yes
                 return last_save
 
         except FileNotFoundError:
