@@ -196,8 +196,7 @@ class Window:
             for j in range(board.ligne):
                 if board[(j, i)] != 0:
                     if not board.check_cell((j, i), board[(j, i)]):
-                        graphics.affiche_rectangle_plein((self.begin_point_board[0] + j * self.taille_case - self.offset+1, self.begin_point_board[1] + i * self.taille_case), \
-                             (self.begin_point_board[0] + (j+1) * self.taille_case - self.offset, self.begin_point_board[1] + (i+1) * self.taille_case - 1), couleur=graphics.rouge)
+                        self._afficher_case_err((j, i))
 
                     graphics.affiche_texte(str(board[(j, i)]), (self.begin_point_board[0] + self.taille_case * j, self.begin_point_board[1] + self.taille_case * i), couleur=graphics.noir, taille_police=35, police='Arial')
     
@@ -257,10 +256,22 @@ class Window:
     def _affiche_cancel_button(self) -> None:
         self.affiche_image_wrapper(_PATHS["Cross"], (self.length - 100, self.width - 100)) # Affichage de l'icone de la croix pour cancel son choix
         graphics.affiche_tout()
+    
+    def affiche_selection(self, coords):
+        """Affiche le rectangle de sélection"""
+        x, y = coords
+        graphics.affiche_rectangle((self.begin_point_board[0] + x * self.taille_case - self.offset+1, self.begin_point_board[1] + y * self.taille_case), \
+            (self.begin_point_board[0] + (x+1) * self.taille_case - self.offset, self.begin_point_board[1] + (y+1) * self.taille_case - 1), couleur=graphics.vert, epaisseur=3)
+        graphics.affiche_tout()
 
     ########################################### Wrappers, fonctions utilitaires ###########################################
     def _clear(self):
         graphics.remplir_fenetre(graphics.blanc)
+
+    def _afficher_case_err(self, coords):
+        x, y = coords
+        graphics.affiche_rectangle_plein((self.begin_point_board[0] + x * self.taille_case - self.offset+1, self.begin_point_board[1] + y * self.taille_case), \
+            (self.begin_point_board[0] + (x+1) * self.taille_case - self.offset, self.begin_point_board[1] + (y+1) * self.taille_case - 1), couleur=graphics.rouge)
 
     def affiche_image_wrapper(self, img_path, dest_bas_gauche) -> None:
         """Affiche une image avec son path et la position du point le plus bas à gauche de l'image"""
@@ -339,6 +350,7 @@ while graphics.pas_echap():
     x = a.ask_action(b)
     print(x)
     if x and x[1] == PLACE:
+        a.affiche_selection(x[0])
         y = a.ask_value()
         if y:
             b[x[0][0], x[0][1]] = y
