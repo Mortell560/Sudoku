@@ -195,7 +195,7 @@ class Window:
         for i in range(board.colonne):
             for j in range(board.ligne):
                 if board[(j, i)] != 0:
-                    if not board.check_colonne(coords=(j, i), value=board[(j, i)]) or not board.check_ligne((j,i), board[(j, i)]): # Si la valeur n'est pas valide on l'affiche en rouge || TODO: Penser à mettre check cell au lieu de check colonne
+                    if not board.check_cell((j, i), board[(j, i)]):
                         graphics.affiche_rectangle_plein((self.begin_point_board[0] + j * self.taille_case - self.offset+1, self.begin_point_board[1] + i * self.taille_case), \
                              (self.begin_point_board[0] + (j+1) * self.taille_case - self.offset, self.begin_point_board[1] + (i+1) * self.taille_case - 1), couleur=graphics.rouge)
 
