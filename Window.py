@@ -20,6 +20,7 @@ RETURN = 1
 SOLVE = 2
 SAVE = 3
 RESET = 4
+LOAD = 5
 
 class Window:
     """Classe qui s'occupe de l'affichage du sudoku"""
@@ -123,7 +124,7 @@ class Window:
         x, y = self._pixel_coord_to_num_pad_coord(x, y)
         return x + y * 3 + 1
 
-    def ask_action(self):
+    def ask_action(self, board: Board):
         """Waits for a click and returns the coordinates of the click and the action associated with it"""
         x, y = graphics.wait_clic()
         Action = PLACE
@@ -151,10 +152,12 @@ class Window:
 
         elif in_leaderboard:
             self.affiche_leaderboard()
+            return None, -1
 
         elif in_save:
             Action = SAVE
-            #self.save_leaderboard(6, "Rotate")
+            #self.load_board(board)
+            #self.save_leaderboard(6, "Rotate", board)
             return None, Action
         
         elif in_arrow:
@@ -272,6 +275,21 @@ class Window:
             print(err_msg)
             exit(1)
 
+    def load_board(self) -> None:
+        try:
+            with open(_PATHS["Leaderboard_txt"], 'r') as f:
+                last_save = f.readlines()[-1].strip().split(',')[3:]
+                return last_save
+
+        except FileNotFoundError:
+            err_msg = """
+            Le fichier "{}" n\'a pas pu être ouvert depuis le dossier actuel "{}"
+            Verifiez que le dossier data est présent et lancez le jeu depuis le dossier src
+            """.format(_PATHS["Leaderboard_txt"], os.getcwd())
+
+            print(err_msg)
+            exit(1)
+
     def load_leaderboard(self) -> list:
         try:
             with open(_PATHS["Leaderboard_txt"], 'r') as f:
@@ -291,13 +309,14 @@ class Window:
             print(err_msg)
             exit(1)
 
-    def save_leaderboard(self, score: int, username: str) -> None:
-        """Sauvegarde les stats d'username et son score (nb moves) dans le fichier leaderboard.txt"""
+    def save_leaderboard(self, score: int, username: str, board: Board) -> None:
+        """Sauvegarde les stats d'username et son score (nb moves) ainsi que le board dans le fichier leaderboard.txt"""
         try:
+            liste_str = board.__str__()
             now = datetime.now()
             date = now.strftime("%d/%m/%Y %H:%M:%S")
             with open(_PATHS["Leaderboard_txt"], 'a') as f:
-                f.write(f"{username},{score},{date}\n")
+                f.write(f"{username},{score},{date},{liste_str}\n")
         except FileNotFoundError:
             err_msg = """
             Le fichier "{}" n\'a pas pu être ouvert depuis le dossier actuel "{}"
@@ -317,7 +336,7 @@ b[4, 3] = 5
 a = Window(600, 800)
 while graphics.pas_echap():
     a.afficher(b)
-    x = a.ask_action()
+    x = a.ask_action(b)
     print(x)
     if x and x[1] == PLACE:
         y = a.ask_value()

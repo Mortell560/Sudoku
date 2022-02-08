@@ -86,7 +86,7 @@ class Board:
             for x in range(self.ligne):
                 if not self.check_cells((x,y),self[x,y]):   
                     return False                
-       return True
+        return True
     
     def check_case(self,coords: tuple, value: int):
         # verifie pour le carre de 9 cases (ou se trouvent les coords)si "value" est deja present
@@ -103,5 +103,10 @@ class Board:
                 return False
             else:
                 return True
-                
+    
+    def __str__(self) -> str:
+        string=""
+        for val in self.board:
+            string += str(val) + ","
+        return string[:-1]
             
