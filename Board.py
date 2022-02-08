@@ -1,6 +1,7 @@
 import random
 
 class Board:
+    ind_liste = 0 #utile pour le create_board()
     def __init__(self):
         self.board = []
         self.colonne = 9
@@ -18,6 +19,7 @@ class Board:
             nombre_random = random.randint(1,9)
             if check_cell((x,y), nombre_random):
                 self.board[num_dans_liste] = nombre_random
+
     
     def check_colonne(self,coords, value): 
         """regarde si y'a un autre chiffre égal sur toute la même colonne"""
@@ -27,7 +29,6 @@ class Board:
             if colonne == y:
                 continue
             else:
-
                 value_coords_act = self[(x, colonne)]
                 if value_coords_act == value:
                     return False
@@ -37,16 +38,21 @@ class Board:
     def check_ligne(self, coords, value): 
         """regarde si y'a un autre chiffre égal sur toute la même ligne"""
         x, y = coords[0], coords[1]
-
         for ligne in range(self.ligne):
             if ligne == x:
                 continue
             else:
-                value_coords_act = self[ligne, y]
+                value_coords_act = self.get_value(ligne, y)
                 if value_coords_act == value:
                     return False
         return True
-            
+    
+    
+    def check_cell(self, coords, value):
+        """utilise tous les précédents checks pour déterminer si la position est complètement valide. True si c’est le cas, False sinon."""
+        return self.check_case(coords, value) and self.check_colonne(coords, value) and self.check_ligne(coords, value)
+    
+    
     def get_coords_case(self, coords): 
         """return une liste de tuple de coordonnées qui sont dans la même case que les coordonnées passés en argument"""
         x, y = coords[0], coords[1]
@@ -62,6 +68,13 @@ class Board:
         x,y=coords[0],coords[1]
         indice=x+y*self.colonne
         return indice
+      
+    def list_indice_to_coords(self, ind_liste):
+        """donne les coords en fonction de l'indice dans la liste self.board"""
+        x = ind_liste % 9
+        y = ind_liste // 9
+        coords = (x,y)
+        return coords
     
     def __setitem__(self,coords,valeur):
         x,y=coords[0],coords[1]
@@ -109,4 +122,3 @@ class Board:
         for val in self.board:
             string += str(val) + ","
         return string[:-1]
-            
