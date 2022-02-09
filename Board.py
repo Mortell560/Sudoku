@@ -8,6 +8,19 @@ class Board:
         self.ligne = 9
         self.taille_case = 3
 
+    def create_board(self, n):
+        """création dubune remplie de 0 puis on ajoute aléatoirement un certain nombre n"""
+        nbr_de_zero = self.colonne * self.ligne
+        self.board = nbr_de_zero * [0]
+
+        for nombre in range(n):
+            x = random.randint(0,8)
+            y = random.randint(0,8)
+            num_dans_liste = x + y * (self.colonne)
+            nombre_random = random.randint(1,9)
+            if self.check_cell((x,y), nombre_random):
+                self.board[num_dans_liste] = nombre_random
+    
     def __setitem__(self,coords,valeur):
         x,y=coords[0],coords[1]
         indice=x+y*self.colonne
@@ -121,3 +134,15 @@ class Board:
         for val in self.board:
             string += str(val) + ","
         return string[:-1]
+    
+    def solve(self):
+        for x in range(9):
+            for y in range(9):
+                ind = self.coord_to_list_coord((x,y))
+                if self.board[ind] == 0:
+                    for valeur in range(1, 10):
+                        if self.check_cell((x,y), valeur):
+                            self.board[ind] = valeur
+                            self.solve()
+                            self.board[ind] = 0
+
