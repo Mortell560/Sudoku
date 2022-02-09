@@ -1,4 +1,14 @@
+from Window import Window
+from Pile import Pile
+from Board import Board
+
 class Game:
+    def __init__(self, n):
+        self.last_moves = Pile()
+        self.W = Window(600, 800)
+        self.n = n
+        self.B = Board(n)
+        
     def run(self):
         while self.graphics.pas_echap():
             self.W.afficher(self.B)
