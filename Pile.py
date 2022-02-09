@@ -23,7 +23,7 @@ class Pile:
         if self.est_vide() == False:
             return self.contenu.pop()
 
-    def len(self):
+    def __len__(self):
         # retourne le nombre d'elements de la pile
         return len(self.contenu)
 """

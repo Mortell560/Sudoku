@@ -16,10 +16,9 @@ class Board:
         for nombre in range(n):
             x = random.randint(0,8)
             y = random.randint(0,8)
-            num_dans_liste = x + y * (self.colonne)
             nombre_random = random.randint(1,9)
             if self.check_cell((x,y), nombre_random):
-                self.board[num_dans_liste] = nombre_random
+                self[x, y] = nombre_random
     
     def __setitem__(self,coords,valeur):
         x,y=coords[0],coords[1]
@@ -82,19 +81,6 @@ class Board:
     def check_cell(self, coords, value):
         """utilise tous les précédents checks pour déterminer si la position est complètement valide. True si c’est le cas, False sinon."""
         return self.check_colonne(coords, value) and self.check_ligne(coords, value) and self.check_case(coords, value)
-    
-
-    def create_board(self, n):
-        '''création d'un tableau remplie de 0. Puis on ajoute un nombre n de chiffres aléatoirement dans celui-ci'''
-        self.board = [0] * self.colonne * self.ligne
-        
-        for nombre in range(n):
-            x = random.randint(0,8)
-            y = random.randint(0,8)
-            num_dans_liste = x + y * (self.colonne + 1)
-            nombre_random = random.randint(1,9)
-            if self.check_cell((x,y), nombre_random):
-                self.board[num_dans_liste] = nombre_random
 
     def coord_to_list_coord(self, coords):
         x,y=coords[0],coords[1]

@@ -13,18 +13,15 @@ _PATHS = {
     "Cross": "img/No.png",
     "Leaderboard_txt": "data/leaderboard.txt",
 }
-
 VERSION = "0.1"
-PLACE = 0
-RETURN = 1
-SOLVE = 2
-SAVE = 3
-RESET = 4
-LOAD = 5
-
 class Window:
     """Classe qui s'occupe de l'affichage du sudoku"""
-
+    PLACE = 0
+    RETURN = 1
+    SOLVE = 2
+    SAVE = 3
+    RESET = 4
+    LOAD = 5
     def __init__(self, length: int, width: int) -> None:
         self.width = width
         self.length = length
@@ -127,7 +124,7 @@ class Window:
     def ask_action(self, board: Board):
         """Waits for a click and returns the coordinates of the click and the action associated with it"""
         x, y = graphics.wait_clic()
-        Action = PLACE
+        Action = self.PLACE
 
         # Tant que le clic n'est pas dans la grille, dans l'un des différents boutons, on redemande un clic
         in_board = self.is_in_board(x, y)
@@ -147,7 +144,7 @@ class Window:
             in_reset = self.is_in_reset_button(x, y)
 
         if in_board:
-            Action = PLACE
+            Action = self.PLACE
             return self._pixel_coord_to_board_coord(x, y), Action
 
         elif in_leaderboard:
@@ -155,21 +152,21 @@ class Window:
             return None, -1
 
         elif in_save:
-            Action = SAVE
+            Action = self.SAVE
             #self.load_board(board)
             #self.save_leaderboard(6, "Rotate", board)
             return None, Action
         
         elif in_arrow:
-            Action = RETURN
+            Action = self.RETURN
             return None, Action
         
         elif in_solve:
-            Action = SOLVE
+            Action = self.SOLVE
             return None, Action
 
         else:
-            Action = RESET
+            Action = self.RESET
             return None, Action
 
 
@@ -241,9 +238,11 @@ class Window:
         self.affiche_image_wrapper(_PATHS["Leaderboard"], (10, self.width - 75)) # Affichage de l'icone pour afficher le leaderboard
         graphics.affiche_texte(str(len(pile)), (self.length - self.offset * 3 - self.offset//2, self.img_size + self.offset * 5 - self.offset), couleur=graphics.noir, taille_police=35, police='Arial')
 
-    def afficher(self, board: list, pile_coup_joue: Pile = []) -> None:
+    def afficher(self, board: list, pile_coup_joue: Pile) -> None:
         """Affiche tout le jeu"""
+        self._clear()
         self.affiche_tableau(board)
+        print(pile_coup_joue.contenu)
         graphics.affiche_texte(f"Sudoku V{VERSION}", (self.length // 2 - 150, self.width - 100), couleur=graphics.noir, taille_police=50, police='Comic Sans MS') # Affiche le titre du jeu et la version
         self._affiche_icon_and_buttons(pile_coup_joue)
         graphics.affiche_tout()
@@ -338,7 +337,7 @@ class Window:
             exit(1)
         
 ###################### Partie Test ##############################
-
+"""
 b= Board()
 b.board=[0]*9*9
 b[4, 7] = 5
@@ -354,4 +353,4 @@ while graphics.pas_echap():
         y = a.ask_value()
         if y:
             b[x[0][0], x[0][1]] = y
-
+"""
