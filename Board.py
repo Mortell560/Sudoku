@@ -109,11 +109,10 @@ class Board:
         return True
     
     def is_full(self):    
-        for i in self.boards:
+        for i in self.board:
             if i == 0:
                 return False
-            else:
-                return True
+        return True
     
     def __str__(self) -> str:
         string=""
@@ -122,8 +121,9 @@ class Board:
         return string[:-1]
     
     def solve(self):
-        for x in range(9):
-            for y in range(9):
+        print(self.board)
+        for x in range(self.colonne):
+            for y in range(self.ligne):
                 ind = self.coord_to_list_coord((x,y))
                 if self.board[ind] == 0:
                     for valeur in range(1, 10):

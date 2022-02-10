@@ -103,19 +103,10 @@ class Window:
     def ask_value(self):
         """Waits for a click and returns the value that must be assigned to the cell"""
         self.affiche_num_pad()
-        self._affiche_cancel_button()
+        #self._affiche_cancel_button()
         x, y = graphics.wait_clic()
-        
-        cancelled = self.is_in_cancel_button(x, y)
-
-        # Tant que le clic n'est pas dans le num pad ou cancelled, on redemande un clic
-        while not self.is_in_num_pad(x, y) and not cancelled:
-            x, y = graphics.wait_clic()
-            cancelled = self.is_in_cancel_button(x, y)
-        
-        self._clear()
-
-        if cancelled:
+                
+        if not self.is_in_num_pad(x, y):
             return None
         
         x, y = self._pixel_coord_to_num_pad_coord(x, y)

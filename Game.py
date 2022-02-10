@@ -17,8 +17,10 @@ class Game:
             action = self.W.ask_action(board=self.B) #tuple(tuple(x,y), Action) | None | tuple(None, Action)
             print(action)
             if action[1] == Window.PLACE:
+                self.W.affiche_selection(action[0])
                 value = self.W.ask_value()
-                self.place(action[0], value)
+                if value:
+                    self.place(action[0], value)
 
             elif action[1] == Window.RETURN:
                 if self.last_moves.est_vide():
