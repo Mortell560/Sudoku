@@ -240,7 +240,7 @@ class Window:
 
     def affiche_win(self) -> None:
         """Affiche le message de victoire"""
-        graphics.affiche_texte("Gagné !", (self.num_pad_x + self.offset * 2 + 5, self.num_pad_y + self.taille_case * 3 + self.offset), couleur=graphics.rouge, taille_police=35, police='Arial')
+        graphics.affiche_texte("Gagné !", (self.num_pad_x + self.offset + 5, self.num_pad_y + self.taille_case * 3 + self.offset), couleur=graphics.rouge, taille_police=35, police='Arial')
         graphics.affiche_tout()
 
     def _affiche_cancel_button(self) -> None:

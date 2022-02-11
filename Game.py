@@ -1,3 +1,4 @@
+from time import sleep
 from Window import Window
 from Pile import Pile
 from Board import Board
@@ -13,6 +14,13 @@ class Game:
         
     def run(self):
         while graphics.pas_echap():
+            if self.B.is_win():
+                self.W.affiche_win()
+                sleep(10)
+                self.B.create_board(self.n) # ne pas oublié le n nombre de case mise dans le jeu
+                while not self.last_moves.est_vide():
+                    self.last_moves.depiler()
+
             self.W.afficher(self.B, self.last_moves)
             action = self.W.ask_action(board=self.B) #tuple(tuple(x,y), Action) | None | tuple(None, Action)
             print(action)

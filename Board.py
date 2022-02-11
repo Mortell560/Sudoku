@@ -104,7 +104,7 @@ class Board:
     def is_win(self):
         for y in range(self.colonne):
             for x in range(self.ligne):
-                if not self.check_cells((x,y),self[x,y]):   
+                if not self.check_cell((x,y),self[x,y]):   
                     return False                
         return True
     
